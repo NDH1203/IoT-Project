@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <img src="" alt="">
+            <a href="#">Home</a>
+            <a href="#">Devices</a>
+            <a href="#">Users</a>
+            <a href="#">About</a>
+            <a href="#" id="login">Login</a>
+        </header>
+        <section>
+            <div class="main" id="main">
+            </div>
+        </section>
+        <footer>
+
+        </footer>
+    </div>
+
+
+    <script src="https://www.gstatic.com/firebasejs/5.8.6/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyAZiHkirmZhLyv7FAxA9NHbpZMJ3GKxpC0",
+            authDomain: "iot-control-b05da.firebaseapp.com",
+            databaseURL: "https://iot-control-b05da.firebaseio.com",
+            projectId: "iot-control-b05da",
+            storageBucket: "iot-control-b05da.appspot.com",
+            messagingSenderId: "651506769827"
+        };
+        firebase.initializeApp(config);
+    </script>
+    <script src="js/script.js"></script>
+</body>
+
+</html>
