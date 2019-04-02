@@ -1,15 +1,15 @@
-#include <Firebase.h>
 #include <FirebaseArduino.h>
 
 #include <ESP8266WiFi.h>
+#include <DNSServer.h>
+#include <ESP8266WebServer.h>
+#include <WiFiManager.h>
 
 #define FIREBASE_HOST "iot-control-b05da.firebaseio.com"
 #define FIREBASE_AUTH "SAhsFAyLTWjfwqwgtebI9I23axUgSvv5x7rNj0CG"
 
-#define USER_UID "tHiJ8OSxd1TXxAdZ6WFMhqtDVB22"
-
-#define WIFI_SSID "PHONG THOA"
-#define WIFI_PASSWORD "sodienthoai"
+char uid[30];
+WiFiManagerParameter user_uid("uid", "user uid", uid, 30);
 
 #define dSizes 4
 
@@ -32,40 +32,24 @@ void setup()
 
 void ConnectWifi()
 {
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    Serial.print("connecting");
-    while (WiFi.status() != WL_CONNECTED)
-    {
-        Serial.print(".");
-        delay(1000);
-    }
-    Serial.println();
-    Serial.print("Wifi connected!");
+    WiFiManager wifiManager;
+    wifiManager.addParameter(&user_uid);
+    wifiManager.resetSettings();
+    wifiManager.autoConnect("ESP8266");
 }
 
 void Reconnect()
 {
     ConnectWifi();
+    strcpy(uid, user_uid.getValue());
+    //Serial.print(uid);
     Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
-    Firebase.stream("/devices/"+(String)USER_UID+"/devicesList");
+    Firebase.stream("/devices/"+(String)uid+"/devicesList");
     Serial.print("Connecting...");
 }
 
-// void GetWifiID(){
-//     Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
-//     Serial.print("Getting wifi ID...");
-//     wifi_ssid = Firebase.getString("/users/"+(String)USER_UID+"/wifiName");
-//     wifi_password = Firebase.getString("/users/"+(String)USER_UID+"/wifiPassword");
-// }
-
 void loop()
 {
-    // if (wifi_ssid.equals("") || wifi_password.equals("")){
-    //     GetWifiID();
-    // }
-    /*if (!wifi_ssid.equals("") || !wifi_password.equals("")){
-        ConnectWifi(wifi_ssid, wifi_password);
-    }*/
     if (Firebase.available())
     {
         FirebaseObject event = Firebase.readEvent();
@@ -88,11 +72,11 @@ void loop()
             {
                 for(i = 0; i < dSizes; i++)
                 {
-                  byte t = i+1;
-                    String device = "device";
-                    device += t;
+                    //byte t = i;
+                    //String device = "device";
+                    //device += t;
                     //Serial.print(device);
-                    JsonVariant d = payload[device];
+                    JsonVariant d = payload[i];
                     JsonVariant load = d["state"];
                     if(load.success()){
                         dStates[i] = load;
@@ -101,9 +85,12 @@ void loop()
                     digitalWrite(Devices[i], !dStates[i]);
                 }
             }
-            if(path.length() > 6){
-                byte len = path.length();
-                byte uid = path.substring(len-1).toInt()-1;
+            else {
+                //byte len = path.length();
+                //byte uid = path.substring(len-1).toInt()-1;
+                String tmp = path;
+                tmp.remove(0, 1);
+                int uid = tmp.toInt();
                 //Serial.print(uid);
                 JsonVariant state = payload["state"];
                 if(state.success()){
